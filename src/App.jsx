@@ -114,10 +114,19 @@ export default function App() {
   }
 
   function startTest(testId, retake = false) {
+    const test = TEST_SCHEDULE.find((item) => item.id === testId);
+    const dueTime = new Date(test.at).getTime();
+
+    if (Date.now() < dueTime) {
+      alert(`Test ${testId} is locked. It will unlock at ${fmtDate(test.at)}.`);
+      return;
+    }
+
     if (results[testId] && !retake) {
       alert('This test is already submitted. Use Retake if you want to replace your score.');
       return;
     }
+
     if (retake && !confirm('Retake will replace previous result for this test. Continue?')) return;
 
     stopAlarm();
@@ -438,23 +447,23 @@ function Metric({ title, value }) {
 
 function TestCard({ test, result, now, startTest }) {
   const due = new Date(test.at).getTime();
-  let tag = 'Available anytime';
-  let tagClass = '';
-  if (!result && now >= due) {
-    tag = 'Due / Overdue';
-    tagClass = 'bad';
-  }
+  const isLocked = now < due;
+
+  let tag = isLocked ? `Locked until ${fmtDate(test.at)}` : 'Due / Overdue';
+  let tagClass = isLocked ? '' : 'bad';
+
   if (result && now < result.availableAt) {
-    tag = `Pending ${fmtTime((result.availableAt - now) / 1000)}`;
+    tag = `Result Pending ${fmtTime((result.availableAt - now) / 1000)}`;
     tagClass = 'warn';
   }
+
   if (result && now >= result.availableAt) {
     tag = `Score ${result.score}/81`;
     tagClass = result.percentage >= 75 ? 'good' : result.percentage >= 55 ? 'warn' : 'bad';
   }
 
   return (
-    <div className="card testCard">
+    <div className={`card testCard ${isLocked && !result ? 'lockedCard' : ''}`}>
       <div className="between">
         <h3>Test {test.id}</h3>
         <span className={`tag ${tagClass}`}>{tag}</span>
@@ -467,7 +476,11 @@ function TestCard({ test, result, now, startTest }) {
       </div>
       <p><b>Scheduled:</b> {fmtDate(test.at)}</p>
       <div className="row">
-        <button onClick={() => startTest(test.id)}>Start Anytime</button>
+        {!result && (
+          <button disabled={isLocked} onClick={() => startTest(test.id)}>
+            {isLocked ? 'Locked' : 'Start Test'}
+          </button>
+        )}
         {result && <button className="secondary" onClick={() => startTest(test.id, true)}>Retake</button>}
       </div>
     </div>
