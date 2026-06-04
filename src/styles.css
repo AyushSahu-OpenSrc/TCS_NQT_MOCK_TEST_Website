@@ -123,7 +123,13 @@ h3 { margin-bottom: 8px; }
 .tag.good { border-color: rgba(24, 201, 100, .45); color: #9affc2; }
 .tag.warn { border-color: rgba(255, 176, 32, .45); color: #ffd792; }
 .tag.bad { border-color: rgba(255, 77, 79, .45); color: #ffb5b6; }
-.tag.red { border-color: rgba(255, 31, 61, .55); color: #ff9ba8; }
+.tag.red {
+  border-color: rgba(255, 31, 61, .55);
+  background: linear-gradient(135deg, rgba(255, 31, 61, .16), rgba(83, 0, 11, .35));
+  color: #ff9ba8;
+  font-weight: 800;
+  box-shadow: 0 0 10px rgba(255, 31, 61, .15);
+}
 
 .card {
   background: linear-gradient(180deg, rgba(255, 255, 255, .045), rgba(255, 255, 255, .012));
@@ -191,6 +197,13 @@ h3 { margin-bottom: 8px; }
 .testCard {
   position: relative;
   overflow: hidden;
+  transition: transform .22s cubic-bezier(0.4, 0, 0.2, 1), border-color .22s ease, box-shadow .22s ease;
+}
+
+.testCard:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 31, 61, 0.35);
+  box-shadow: 0 20px 48px rgba(255, 31, 61, 0.08), 0 16px 44px var(--shadow);
 }
 
 .testCard::before {
@@ -401,15 +414,24 @@ h3 { margin-bottom: 8px; }
   color: white;
   box-shadow: none;
   font-size: 12px;
+  transition: all .16s ease;
+}
+
+.qButton:hover {
+  background: #282828;
+  border-color: #555;
+  transform: scale(1.06);
 }
 
 .qButton.answered {
-  background: #30000b;
+  background: linear-gradient(135deg, #42000c, #1f0004);
   border-color: var(--red);
+  box-shadow: 0 0 10px rgba(255, 31, 61, .25);
 }
 
 .qButton.current {
   outline: 2px solid #ffffff;
+  outline-offset: 1px;
 }
 
 .bottomActions {

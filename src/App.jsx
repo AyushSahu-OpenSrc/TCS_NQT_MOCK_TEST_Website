@@ -57,6 +57,10 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [screen]);
+
+  useEffect(() => {
     const overdue = TEST_SCHEDULE.find((test) => {
       const due = new Date(test.at).getTime();
       return now >= due && !results[test.id];
@@ -242,6 +246,7 @@ export default function App() {
             correctAnswer: question.answer,
             explanation: question.explanation,
             trick: question.trick,
+            pyq: question.pyq,
           });
         }
       });
@@ -471,7 +476,7 @@ function TestCard({ test, result, now, startTest }) {
       <p className="muted">{test.focus}</p>
       <div className="miniTags">
         <span>81 Q</span>
-        <span>No Coding</span>
+        <span className="tag red">Target: {test.target}/81</span>
         <span>Verbal 25s/Q</span>
       </div>
       <p><b>Scheduled:</b> {fmtDate(test.at)}</p>
@@ -548,6 +553,7 @@ function DashboardResult({ test, result, now }) {
                 <div className="wrongHead">
                   <span className="tag bad">Q{item.number}</span>
                   <span className="tag">{item.section}</span>
+                  {item.pyq && <span className="tag red">{item.pyq}</span>}
                 </div>
                 <p className="questionText">{item.text}</p>
                 <p className="wrongAnswer">Your answer: {item.yourAnswer}</p>
@@ -619,7 +625,10 @@ function TestScreen({ session, setDashboard, updateAnswer, goQuestion, nextQuest
       <main className="card questionPanel">
         <div className="between wrapMobile">
           <div>
-            <span className="tag">{current.section}</span>
+            <div className="row" style={{ marginBottom: '8px' }}>
+              <span className="tag">{current.section}</span>
+              {current.pyq && <span className="tag red">{current.pyq}</span>}
+            </div>
             <p className="muted">Question {session.currentIndex + 1} of {TOTAL_QUESTIONS}</p>
           </div>
           {current.section === 'Verbal Ability' && (
